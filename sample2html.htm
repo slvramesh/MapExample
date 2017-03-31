@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Untitled Page</title>
+    
+     <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map-canvas { height: 100% }
+      #map_canvas, .maphere
+      {
+          width: 1000px;
+          height: 550px;
+      }
+    </style>
+    
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTFF5JmalQU7vjfT5yYeMQPcUz9TuEs8M&sensor=false">
+    </script>
+    
+    <script>
+
+        var geocoder;
+        function initialize(startAddress, endAddress) {
+            $('#map_canvas').remove();
+            $('.maphere').append('<div id="map_canvas"></div>');
+            geocoder = new google.maps.Geocoder();
+            var mapOptions = {
+                zoom: 3,
+                center: new google.maps.LatLng(35, -90),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+            if (startAddress && startAddress != "" && endAddress && endAddress != "") {
+                var myplaces = new Array();
+                myplaces.push(startAddress);
+                myplaces.push(endAddress);
+
+                window.locationlat = 0;
+                window.locationlng = 0;
+                window.path = new Array();
+                var bounds = new google.maps.LatLngBounds();
+
+                for (var i = 0; i < myplaces.length; i++) {
+                    var location = myplaces[i].split(",");
+                    codeAddress(map, location[0], location[1], bounds);
+                }
+            }
+        }
+
+        function initializeFirstPoint(startAddress) {
+            $('#map_canvas').remove();
+            $('.maphere').append('<div id="map_canvas"></div>');
+            geocoder = new google.maps.Geocoder();
+            var mapOptions = {
+                zoom: 3,
+                center: new google.maps.LatLng(38, -97),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+            if (startAddress) {
+                if (startAddress == "") {
+                    return;
+                }
+
+                var bounds = new google.maps.LatLngBounds();
+                var location = startAddress.split(",");
+
+                var image = new google.maps.MarkerImage('plain.png',
+                        new google.maps.Size(20, 32),
+                        new google.maps.Point(0, 0),
+                        new google.maps.Point(0, 32));
+                var shadow = new google.maps.MarkerImage('plain_shadow.png',
+                        new google.maps.Size(37, 32),
+                        new google.maps.Point(0, 0),
+                        new google.maps.Point(0, 32));
+                var shape = {
+                    coord: [1, 1, 1, 20, 18, 20, 18, 1],
+                    type: 'poly'
+                };
+                var mapLatLng = new google.maps.LatLng(location[0], location[1]);
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: mapLatLng,
+                    map: map,
+                    shadow: shadow,
+                    icon: image,
+                    shape: shape
+                });
+                map.setCenter(mapLatLng);
+            }
+        }
+
+        function codeAddress(map, lat, lng, bounds) {
+            var image = new google.maps.MarkerImage('plain.png',
+            // This marker is 20 pixels wide by 32 pixels tall.
+                        new google.maps.Size(20, 32),
+            // The origin for this image is 0,0.
+                        new google.maps.Point(0, 0),
+            // The anchor for this image is the base of the flagpole at 0,32.
+                        new google.maps.Point(0, 32));
+            var shadow = new google.maps.MarkerImage('plain_shadow.png',
+
+                        new google.maps.Size(37, 32),
+                        new google.maps.Point(0, 0),
+                        new google.maps.Point(0, 32));
+
+            var shape = {
+                coord: [4, 4, 5, 200, 18, 100, 18, 9],
+                type: 'poly'
+            };
+            var location = new google.maps.LatLng(lat, lng);
+            var marker = new google.maps.Marker({
+                map: map,
+                position: location,
+                map: map,
+                shadow: shadow,
+                icon: image,
+                shape: shape
+            });
+
+            window.locationlat = window.locationlat + location.lat();
+            window.locationlng = window.locationlng + location.lng();
+
+            var latlngx = new google.maps.LatLng((window.locationlat) / 2, (window.locationlng) / 2);
+            map.setCenter(latlngx);
+
+            bounds.extend(location);
+            map.fitBounds(bounds);
+            window.path.push(new google.maps.LatLng(location.lat(), location.lng()));
+
+            if (window.path.length > 1) {
+                var polyOptions = {
+                    path: window.path,
+                    strokeColor: '#0000FF',
+                    strokeOpacity: 1,
+                    strokeWeight: 4
+                }
+                poly = new google.maps.Polyline(polyOptions);
+                poly.setMap(map);
+
+            }
+
+        }
+        $(document).ready(function() {
+            initialize("13.08, 80.27", "40.00, -100.00");
+        });
+
+    </script>
+</head>
+<body>
+
+<div class='maphere'></div>
+
+</body>
+</html>

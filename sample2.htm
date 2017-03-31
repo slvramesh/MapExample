@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Untitled Page</title>
+    
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTFF5JmalQU7vjfT5yYeMQPcUz9TuEs8M&sensor=false">
+    </script>
+    
+</head>
+<body onload="initialize()">
+
+  <script>
+  var geocoder;
+  var map;
+  function initialize() {
+    geocoder = new google.maps.Geocoder();
+    var latlng = new google.maps.LatLng(-34.397, 150.644);
+    var mapOptions = {
+      zoom: 8,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+  }
+
+  function codeAddress() {
+    var address = document.getElementById("address").value;
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+        });
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+}
+
+function getLangLat() {
+    var address = $('#address').val();
+    var url = "http://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&sensor=false";
+    
+    alert(address);
+    alert(url);
+    
+    
+    
+    $.ajax({
+        url: url
+    }).done(function(msg) {
+        console.log(msg);
+    });
+}
+</script>
+<div id="map-canvas" style="width: 320px; height: 480px;"></div>
+  <div>
+    <input id="address" type="textbox" value="Sydney, NSW">
+    <input type="button" value="Encode" onclick="codeAddress()">
+    
+    <input type="button" value="Get LangLat" onclick="getLangLat()" />
+  </div>
+  
+  
+</body>
+</html>
